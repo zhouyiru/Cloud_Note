@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"      
+ "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+<mapper namespace="cn.tedu.note.dao.NoteDao">
+	<select id="findNotesByNotebookId" parameterType="String" resultType="map">
+		select 
+			cn_note_id as id,
+			cn_note_title as title 
+		from 
+			cn_note 
+		where 
+			cn_notebook_id=#{notebookId} 
+		order by 
+			cn_note_last_modify_time desc
+	</select>
+	<select id="findNoteById" parameterType="String" resultType="cn.tedu.note.entity.Note">
+		select
+			cn_notebook_id as notebookId,
+			cn_note_id as noteId,
+			cn_user_id as id,
+			cn_note_status_id as statusId,
+			cn_note_type_id as typeId,
+			cn_note_title as title,
+			cn_note_body as body,
+			cn_note_create_time as createTime,
+			cn_note_last_modify_time as LastModifyTime
+		from
+			cn_note
+		where 
+			cn_note_id=#{noteId} 
+	</select>
+	<insert id="addNote" parameterType="cn.tedu.note.dao.NoteDao">
+		insert into
+			cn_note
+			(
+				cn_notebook_id,
+				cn_note_id,
+				cn_user_id,
+				cn_note_status_id,
+				cn_note_type_id,
+				cn_note_title,
+				cn_note_body,
+				cn_note_create_time,
+				cn_note_last_modify_time
+			) values(
+				#{notebookId},
+				#{noteId},
+				#{id},
+				#{statusId},
+				#{typeId},
+				#{title},
+				#{body},
+				#{createTime},
+				#{LastModifyTime}
+			)
+	</insert>
+	<delete id="deleteNoteById" parameterType="String">
+		delete cn_note where cn_note_id=#{noteId}
+	</delete>
+	<select id="findNotes" resultType="map">
+		select
+			cn_note_id as id,
+			cn_note_title as title
+		from
+			cn_note
+		<where>
+			<trim suffixOverrides="and">
+				<if test="userId!=null">
+					cn_user_id =#{userId} and
+				</if>
+				<if test="notebookId!=null">
+					cn_notebook_id=#{notebookId} and
+				</if>
+					cn_note_status_id=#{statusId}
+			</trim>
+		</where>
+		order by 
+			cn_note_last_modify_time desc
+	</select>
+	<delete id="deleteNotes">
+		delete from cn_note 
+		where 
+			cn_note_id in
+			<foreach collection="ids" item="id" open="(" separator="," close=")">
+			#{id}	
+			</foreach>
+	</delete>
+	<update id="updateNote"
+		parameterType="cn.tedu.note.entity.Note">
+			
+	</update>
+</mapper>
